@@ -1151,9 +1151,10 @@ class LanRouter(
         val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return NetKind.None
         return when {
             caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> NetKind.Wifi
-            caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> NetKind.Mobile
-            // A VPN (Tailscale) over whatever carries it: the Wi-Fi underneath still counts.
+            // A VPN over whatever carries it, mobile data included: a VPN into the Mac's own network
+            // (WireGuard, UniFi) reaches its local addresses, so the local route is worth probing.
             caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> NetKind.Wifi
+            caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> NetKind.Mobile
             else -> NetKind.None
         }
     }
